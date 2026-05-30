@@ -1338,15 +1338,21 @@ class MessageEvent:
     timestamp: datetime = field(default_factory=datetime.now)
     
     def is_command(self) -> bool:
-        """Check if this is a command message (e.g., /new, /reset)."""
-        return self.text.startswith("/")
+        """Check if this is a command message (e.g., /new, /reset).
+
+        Leading whitespace is stripped so that mobile platforms that
+        block text-starting-with-slash (e.g. Mattermost Android) can
+        use the `` /command`` workaround — type a leading space and
+        the gateway will still recognise it as a command.
+        """
+        return self.text.strip().startswith("/")
     
     def get_command(self) -> Optional[str]:
         """Extract command name if this is a command message."""
         if not self.is_command():
             return None
         # Split on space and get first word, strip the /
-        parts = self.text.split(maxsplit=1)
+        parts = self.text.strip().split(maxsplit=1)
         raw = parts[0][1:].lower() if parts else None
         if raw and "@" in raw:
             raw = raw.split("@", 1)[0]
