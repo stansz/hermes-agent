@@ -64,7 +64,7 @@ def _load_config():
         "target_ratio": None,    # None = let SDK decide; e.g. 0.3 = keep 30%
         "protect_recent": 4,     # don't compress last N tool results (SDK default)
         "timeout": 15,           # seconds per compression attempt
-        "model": "claude-sonnet-4-5-20250929",
+        "model": "deepseek-v4-pro",  # used for token counting / context limits
     }
     config_path = os.path.expanduser("~/.hermes/config.yaml")
     if os.path.exists(config_path):
