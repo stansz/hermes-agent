@@ -61,8 +61,8 @@ def _load_config():
     import yaml
     defaults = {
         "min_tokens": 500,       # skip outputs smaller than this
-        "target_ratio": None,    # None = let SDK decide; 0.3 = keep 30%
-        "protect_recent": 3,     # don't compress last N tool results
+        "target_ratio": None,    # None = let SDK decide; e.g. 0.3 = keep 30%
+        "protect_recent": 4,     # don't compress last N tool results (SDK default)
         "timeout": 15,           # seconds per compression attempt
         "model": "claude-sonnet-4-5-20250929",
     }
