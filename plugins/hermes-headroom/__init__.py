@@ -8,7 +8,10 @@ compressors for logs/diffs/search results).  Originals are stored in the SDK's
 CCR store and retrievable via the headroom_retrieve tool.
 
 Install (into Hermes venv):
-    ./venv/bin/python3 -m pip install headroom-ai
+    ./venv/bin/python3 -m pip install "headroom-ai[proxy]"
+    # The [proxy] extra is REQUIRED — pulls in transformers + onnxruntime
+    # needed by the Kompress text compression strategy. Without it, only
+    # JSON/code compression works; text content passes through uncompressed.
 
 Enable in ~/.hermes/config.yaml:
     plugins:
