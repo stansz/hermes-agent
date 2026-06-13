@@ -31,6 +31,14 @@ Use any model you want — [Nous Portal](https://portal.nousresearch.com), [Open
 
 ---
 
+## Fork Changes (stansz/hermes-agent)
+
+Minimal divergences from upstream, kept on `clean-fork` for easy rebasing:
+
+- **Mattermost leading-space slash commands** — Normalises platform-escaped commands (e.g. ` /new`) in the Mattermost adapter so mobile users can send slash commands. Scoped to `plugins/platforms/mattermost/adapter.py` (no base-class changes). Includes tests.
+
+---
+
 ## Quick Install
 
 ### Linux, macOS, WSL2, Termux
