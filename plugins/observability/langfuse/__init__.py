@@ -521,14 +521,24 @@ def _usage_and_cost(response: Any, *, provider: str, api_mode: str, model: str, 
                 _ONE_M = Decimal("1000000")
                 entry = get_pricing_entry(model, provider=provider, base_url=base_url)
                 if entry:
+                    input_cost = None
+                    output_cost = None
                     if entry.input_cost_per_million is not None and canonical.input_tokens:
-                        cost_details["input"] = float(Decimal(canonical.input_tokens) * entry.input_cost_per_million / _ONE_M)
+                        input_cost = float(Decimal(canonical.input_tokens) * entry.input_cost_per_million / _ONE_M)
+                        cost_details["input"] = input_cost
                     if entry.output_cost_per_million is not None and canonical.output_tokens:
-                        cost_details["output"] = float(Decimal(canonical.output_tokens) * entry.output_cost_per_million / _ONE_M)
+                        output_cost = float(Decimal(canonical.output_tokens) * entry.output_cost_per_million / _ONE_M)
+                        cost_details["output"] = output_cost
                     if entry.cache_read_cost_per_million is not None and canonical.cache_read_tokens:
-                        cost_details["cache_read_input_tokens"] = float(Decimal(canonical.cache_read_tokens) * entry.cache_read_cost_per_million / _ONE_M)
+                        cache_cost = float(Decimal(canonical.cache_read_tokens) * entry.cache_read_cost_per_million / _ONE_M)
+                        cost_details["cache_read_input_tokens"] = cache_cost
                     if entry.cache_write_cost_per_million is not None and canonical.cache_write_tokens:
-                        cost_details["cache_creation_input_tokens"] = float(Decimal(canonical.cache_write_tokens) * entry.cache_write_cost_per_million / _ONE_M)
+                        cache_write_cost = float(Decimal(canonical.cache_write_tokens) * entry.cache_write_cost_per_million / _ONE_M)
+                        cost_details["cache_creation_input_tokens"] = cache_write_cost
+                    # Always include a "total" so Langfuse can aggregate even if
+                    # per-component matching fails.
+                    if "total" not in cost_details:
+                        cost_details["total"] = float(cost.amount_usd)
                 else:
                     cost_details["total"] = float(cost.amount_usd)
             except Exception:
