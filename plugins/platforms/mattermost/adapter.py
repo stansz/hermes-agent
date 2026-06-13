@@ -867,6 +867,10 @@ class MattermostAdapter(BasePlatformAdapter):
         # Determine message type.
         file_ids = post.get("file_ids") or []
         msg_type = MessageType.TEXT
+        # Mattermost mobile blocks messages starting with '/', suggesting
+        # users prefix with a space (e.g. " /new"). Normalise those.
+        if message_text[:1].isspace() and message_text.lstrip().startswith("/"):
+            message_text = message_text.lstrip()
         if message_text.startswith("/"):
             msg_type = MessageType.COMMAND
 

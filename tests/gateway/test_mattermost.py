@@ -9,7 +9,8 @@ from gateway.config import Platform, PlatformConfig
 from gateway.run import (
     _resolve_gateway_display_bool,
     _resolve_progress_thread_id,
-)
+)from gateway.platforms.base import MessageType
+
 
 
 class TestMattermostProgressThreadRouting:
