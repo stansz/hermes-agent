@@ -1,0 +1,6 @@
+name: hermes-headroom
+version: 0.1.0
+description: "Lightweight Headroom context compression for Hermes Agent tool outputs"
+author: "Sz"
+provides_tools:
+  - headroom_retrieve
