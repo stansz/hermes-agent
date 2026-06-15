@@ -36,6 +36,7 @@ Use any model you want — [Nous Portal](https://portal.nousresearch.com), [Open
 Minimal divergences from upstream, kept on `clean-fork` for easy rebasing:
 
 - **Mattermost leading-space slash commands** — Normalises platform-escaped commands (e.g. ` /new`) in the Mattermost adapter so mobile users can send slash commands. Scoped to `plugins/platforms/mattermost/adapter.py` (no base-class changes). Includes tests.
+- **Headroom context compression** — Custom `hermes-headroom` plugin (`plugins/hermes-headroom/`) that hooks into `transform_tool_result` to compress large tool outputs before they enter the LLM context. Uses the Headroom SDK's multi-strategy pipeline (SmartCrusher, LogCompressor, Kompress ONNX, etc.). Originals stored in CCR for reversible retrieval via the `headroom_retrieve` tool. Configured via `hermes-headroom` key in `config.yaml` (min_tokens, target_ratio, etc.). Includes `/headroom` command for session stats.
 
 ---
 
