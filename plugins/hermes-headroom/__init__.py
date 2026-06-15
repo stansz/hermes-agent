@@ -23,7 +23,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 
-from headroom.compress import compress
+from headroom.compress import compress, CompressConfig
 from headroom.cache.compression_store import get_compression_store
 
 logger = logging.getLogger("hermes-headroom")
@@ -61,8 +61,8 @@ def _load_config():
     import yaml
     defaults = {
         "min_tokens": 500,       # skip outputs smaller than this
-        "target_ratio": None,    # None = let SDK decide; e.g. 0.3 = keep 30%
-        "protect_recent": 4,     # don't compress last N tool results (SDK default)
+        "target_ratio": 0.1,     # keep 10% of original (SDK 0.25+ needs explicit ratio)
+        "protect_recent": 4,     # don't compress last N tool results
         "timeout": 15,           # seconds per compression attempt
         "model": "deepseek-v4-pro",  # used for token counting / context limits
     }
@@ -137,16 +137,24 @@ def _on_transform_tool_result(
         # The SDK expects messages in Anthropic format
         messages = [{"role": "tool", "content": result, "name": tool_name}]
 
-        compress_opts = {}
-        if _config.get("target_ratio") is not None:
-            compress_opts["target_ratio"] = _config["target_ratio"]
+        # Build CompressConfig for 0.25.0+ SDK (requires explicit config)
+        target_ratio = _config.get("target_ratio")
+        compress_config = CompressConfig(
+            # We gate min_tokens/protect_recent ourselves, so disable SDK gating
+            min_tokens_to_compress=0,
+            protect_recent=0,
+            target_ratio=target_ratio,
+            # Only compress tool outputs, never user/system messages
+            compress_user_messages=False,
+            compress_system_messages=False,
+        )
 
         with ThreadPoolExecutor(max_workers=1) as ex:
             fut = ex.submit(
                 compress,
                 messages,
                 model=_config["model"],
-                **compress_opts,
+                config=compress_config,
             )
             try:
                 cr = fut.result(timeout=_config["timeout"])
