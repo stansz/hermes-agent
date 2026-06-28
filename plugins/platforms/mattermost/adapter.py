@@ -869,6 +869,10 @@ class MattermostAdapter(BasePlatformAdapter):
         msg_type = MessageType.TEXT
         # Mattermost mobile blocks messages starting with '/', suggesting
         # users prefix with a space (e.g. " /new"). Normalise those.
+        # NOTE: This is the CORRECT fix — scoped to the Mattermost adapter.
+        # Do NOT re-apply the old gateway-level fix (commit 68881dc63) that
+        # added .strip() to is_command() in gateway/platforms/base.py —
+        # that approach was intentionally reverted by fc6549f9e.
         if message_text[:1].isspace() and message_text.lstrip().startswith("/"):
             message_text = message_text.lstrip()
         if message_text.startswith("/"):
