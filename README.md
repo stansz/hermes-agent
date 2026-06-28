@@ -38,6 +38,8 @@ Minimal divergences from upstream, kept on `clean-fork` for easy rebasing:
 - **Mattermost leading-space slash commands** — Normalises platform-escaped commands (e.g. ` /new`) in the Mattermost adapter so mobile users can send slash commands. Scoped to `plugins/platforms/mattermost/adapter.py` (no base-class changes). Includes tests.
 - **Headroom context compression** — Custom `hermes-headroom` plugin (`plugins/hermes-headroom/`) that hooks into `transform_tool_result` to compress large tool outputs before they enter the LLM context. Uses the Headroom SDK's multi-strategy pipeline (SmartCrusher, LogCompressor, Kompress v2 ONNX, error-output protection). Requires `headroom-ai >= 0.25.0`. Originals stored in CCR for reversible retrieval via the `headroom_retrieve` tool. Configured via `hermes-headroom` key in `config.yaml` (min_tokens, target_ratio, etc.). Includes `/headroom` command for session stats.
 
+- **⚠️ PAT workflow scope** — Fine-grained GitHub PATs require a separate `workflow` permission scope to push changes to `.github/workflows/*.yml` files. When rebasing from upstream, GitHub may reject the push if new or modified workflow files are introduced. Workaround: before pushing after an upstream rebase, restore `.github/workflows/` to match the existing remote state (`git checkout origin/clean-fork -- .github/workflows/`). This only affects CI config files — code changes push fine without the `workflow` scope.
+
 ---
 
 ## Quick Install
